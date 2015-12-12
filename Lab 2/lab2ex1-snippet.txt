@@ -1,0 +1,37 @@
+;===============================================================
+; command dowrite 'w'
+; This command writes a data byte to a specified address
+;===============================================================
+dowrite:
+   lcall getbyt      		; get msb of address
+   mov   dph, a        		; save in dph
+   lcall prthex				; print msb
+   lcall getbyt       		; get lsb of address
+   mov   dpl, a         	; save in dpl
+   lcall prthex				; print lsb
+   lcall getchr				; should get the "="
+   lcall sndchr				; prints it back to user
+   lcall getbyt 	       	; read in data byte
+   movx  @dptr, a			; save in ext mem
+   lcall prthex				; print byte
+   ljmp endloop				; return
+
+;===============================================================
+; command doread  'r'
+; This command reads the data byte at a specified address and
+; prints it out
+;===============================================================
+doread:
+	lcall getbyt			; get msb of address
+	mov dph, a				; save in dph
+	lcall prthex			; print out msb
+	lcall getbyt			; get lsb of address
+	mov dpl, a				; save in dpl
+	lcall prthex			; print out lsb
+	movx a, @dptr			; read from location, and store in a
+	mov P1, a				; debugging!
+	mov r7, a				;
+	lcall crlf				; new line
+	mov a, r7				; load data into acc from r7
+	lcall prthex			; print the data in acc
+	ljmp endloop			; return

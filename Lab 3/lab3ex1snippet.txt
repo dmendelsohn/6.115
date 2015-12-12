@@ -1,0 +1,31 @@
+;===============================================================
+; command vector 'v'
+; This command allows the user to start writing a data
+; vector (up to 256 bytes long) at a specified position
+;===============================================================
+vector:
+	lcall getbyt			; get msb of address
+	mov dph, a				; save in dph
+	lcall prthex			; print msb
+	lcall getbyt			; get lsb of address
+	mov dpl, a				; savid in dpl
+	lcall prthex			; print lsb
+	lcall crlf				; new line
+	mov r0, #0FFh			; initialize loop counter
+vecloop:
+	mov a, dph				; load acc with msb of dptr
+	lcall prthex			; print msb
+	mov a, dpl				; load acc with lsb of dptr
+	lcall prthex			; print lsb
+	mov a,	#20h			; load ASCII space char into acc
+	lcall sndchr			; print out the space
+	lcall getbyt			; get a byte of user input
+	movx @dptr, a			; write to location in dptr
+	lcall prthex			; print out user input byte
+	lcall crlf				; print new line
+	cjne r0, #00h, preploop	; if count > 0, prepare to loop again
+	ljmp endloop			; if count = 0, return to main MINMON
+preploop:
+	dec r0					; decrement loop counter
+	inc dptr				; increment dptr
+	sjmp vecloop			; return to top of loop
